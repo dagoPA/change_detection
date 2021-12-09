@@ -7,8 +7,41 @@ from rasterio.warp import transform_bounds
 ee.Initialize()
 
 
+# Calculate monthly changes between two months
+def calculateMonthlyChanges(start_date, middle_date, final_date, poly, orbit, file_path, export=False):
+    print('start: ' + start_date)
+    print('middle: ' + middle_date)
+    print('final: ' + final_date)
+
+    collection = ee.ImageCollection('COPERNICUS/S1_GRD') \
+        .filter(ee.Filter.eq('transmitterReceiverPolarisation', ['VV', 'VH'])) \
+        .filter(ee.Filter.eq('resolution_meters', 10)) \
+        .filter(ee.Filter.eq('instrumentMode', 'IW')) \
+        .filter(ee.Filter.eq('orbitProperties_pass', orbit)) \
+        .filterBounds(poly)
+
+    print(collection.size().getInfo())
+
+    first_month = collection.filterDate(ee.Date(start_date), ee.Date(middle_date)).mean().clip(poly)
+    second_month = collection.filterDate(ee.Date(start_date), ee.Date(middle_date)).mean().clip(poly)
+
+    if export:
+        gdexport = ee.batch.Export.image.toDrive(
+            first_month.toFloat(),
+            description='first_month_' + start_date + '_' + middle_date,
+            folder=file_path,
+            maxPixels=1540907088,
+            scale=10,
+            region=poly
+        )
+        gdexport.start()
+
+    collectionFromImages = ee.ImageCollection.fromImages([first_month, second_month])
+
+
 # detect changes in SAR images using Cantys' method
-def CalculateCantyDifference(start_date, end_date, file_path, file_name, poly, orbit='ASCENDING',
+def CalculateCantyDifference(start_date, end_date, poly, file_path, file_name,
+                             orbit='ASCENDING',
                              export=False,
                              sum_values=True):
     from canty.eeWishart import omnibus
@@ -21,7 +54,8 @@ def CalculateCantyDifference(start_date, end_date, file_path, file_name, poly, o
         .filter(ee.Filter.eq('transmitterReceiverPolarisation', ['VV', 'VH'])) \
         .filter(ee.Filter.eq('resolution_meters', 10)) \
         .filter(ee.Filter.eq('instrumentMode', 'IW')) \
-        .filter(ee.Filter.eq('orbitProperties_pass', orbit))
+        .filter(ee.Filter.eq('orbitProperties_pass', orbit)) \
+
 
     collection = collection.sort('system:time_start')
 
