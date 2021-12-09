@@ -7,7 +7,7 @@ The sequential omnibus algorithm for Sentinel-1 dual pol, diagonal only imagery
 '''
 
 import ee
-from geeTools.canty.eeMad import chi2cdf
+from canty.eeMad import chi2cdf
 
 
 def det(image):

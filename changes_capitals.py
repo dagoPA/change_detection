@@ -35,6 +35,6 @@ for orbit_ in orbits:
 
         # Calculate changes, comparing each month against the next one
         for i in range(2, len(dates)):
-            geet.calculate_monthly_changes(dates[i - 2], dates[i - 1], dates[i], capital, orbit_, 'test_SAR')
+            sum = geet.calculate_monthly_changes(dates[i - 2], dates[i - 1], dates[i], capital, orbit_, 'test_SAR', export=True, sum_values=True)
 
 print('end of file')

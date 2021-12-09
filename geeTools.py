@@ -2,11 +2,14 @@ import ee
 import math
 import numpy as np
 
+from canty.eeWishart import omnibus
+
 ee.Initialize()
 
 
 # Calculate monthly changes between two months
-def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, file_path, export=False):
+def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, file_path, export=False,
+                              sum_values=False):
     print('start: ' + start_date)
     print('middle: ' + middle_date)
     print('final: ' + final_date)
@@ -18,52 +21,16 @@ def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, 
         .filter(ee.Filter.eq('orbitProperties_pass', orbit)) \
         .filterBounds(poly)
 
-    print(collection.size().getInfo())
-
     first_month = collection.filterDate(ee.Date(start_date), ee.Date(middle_date)).mean().clip(poly)
-    second_month = collection.filterDate(ee.Date(start_date), ee.Date(middle_date)).mean().clip(poly)
+    second_month = collection.filterDate(ee.Date(middle_date), ee.Date(final_date)).mean().clip(poly)
 
-    if export:
-        gdexport = ee.batch.Export.image.toDrive(
-            first_month.toFloat(),
-            description='first_month_' + start_date + '_' + middle_date,
-            folder=file_path,
-            maxPixels=1540907088,
-            scale=10,
-            region=poly
-        )
-        gdexport.start()
-
-    collectionFromImages = ee.ImageCollection.fromImages([first_month, second_month])
-
-
-# detect changes in SAR images using Cantys' method
-def CalculateCantyDifference(start_date, end_date, poly, file_path, file_name,
-                             orbit='ASCENDING',
-                             export=False,
-                             sum_values=True):
-    from canty.eeWishart import omnibus
-
-    coords = ee.List(poly.bounds().coordinates().get(0))
-    # bounds = ee.Geometry(coords)
-    collection = ee.ImageCollection('COPERNICUS/S1_GRD') \
-        .filterBounds(poly) \
-        .filterDate(ee.Date(start_date), ee.Date(end_date)) \
-        .filter(ee.Filter.eq('transmitterReceiverPolarisation', ['VV', 'VH'])) \
-        .filter(ee.Filter.eq('resolution_meters', 10)) \
-        .filter(ee.Filter.eq('instrumentMode', 'IW')) \
-        .filter(ee.Filter.eq('orbitProperties_pass', orbit)) \
-
-
-    collection = collection.sort('system:time_start')
-
-    size = collection.size().getInfo()
-    print('Hay ' + str(size) + ' imagenes en el mes')
-    if size < 2:
-        return 0
-
+    # Create a new ImageCollection with the two images
+    collection = ee.ImageCollection.fromImages([first_month, second_month])
+    # Obtain only VV and VH bands
     pcollection = collection.map(get_vvvh)
-    pList = pcollection.toList(100)
+    # Convert to List
+    pList = pcollection.toList(2)
+
     first = ee.Dictionary({'imlist': ee.List([]), 'poly': poly, 'enl': ee.Number(4.4)})
     imList = ee.Dictionary(pList.iterate(clipList, first)).get('imlist')
 
@@ -88,13 +55,14 @@ def CalculateCantyDifference(start_date, end_date, poly, file_path, file_name,
     if export:
         gdexport = ee.batch.Export.image.toDrive(
             result,
-            description=file_name,
+            description='changes_' + start_date + '_' + final_date,
             folder=file_path,
             maxPixels=1540907088,
             scale=10,
             region=poly
         )
         gdexport.start()
+
     return value
 
 
