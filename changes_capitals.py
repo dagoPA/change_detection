@@ -1,5 +1,3 @@
-from pathlib import Path
-import geeTools as sar
 import pandas as pd
 import ee
 import geeTools as geet
@@ -25,7 +23,6 @@ dates = dates.strftime("%Y-%m-%d").values.tolist()
 # Get the list of municipios
 capitales = ee.FeatureCollection("projects/ee-vulnerability-gee4geo/assets/capitales")
 
-
 for orbit_ in orbits:
     for municipio in municipios:
 
@@ -38,8 +35,6 @@ for orbit_ in orbits:
 
         # Calculate changes, comparing each month against the next one
         for i in range(2, len(dates)):
-            geet.calculateMonthlyChanges(dates[i-2], dates[i-1], dates[i], capital, orbit_, 'test_SAR')
-
-
+            geet.calculate_monthly_changes(dates[i - 2], dates[i - 1], dates[i], capital, orbit_, 'test_SAR')
 
 print('end of file')

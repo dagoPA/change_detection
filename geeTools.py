@@ -1,14 +1,12 @@
 import ee
 import math
 import numpy as np
-import rasterio as rio
-from rasterio.warp import transform_bounds
 
 ee.Initialize()
 
 
 # Calculate monthly changes between two months
-def calculateMonthlyChanges(start_date, middle_date, final_date, poly, orbit, file_path, export=False):
+def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, file_path, export=False):
     print('start: ' + start_date)
     print('middle: ' + middle_date)
     print('final: ' + final_date)
