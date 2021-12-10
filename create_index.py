@@ -48,7 +48,7 @@ nwci = []
 for index, row in data_output.iterrows():
     monthly_total = 0
     for i, v in row.iteritems():
-        monthly_total = monthly_total + (v * municipios[municipios['capital'] == i]['weight'])
+        monthly_total = monthly_total + (v * float(municipios[municipios['capital'] == i]['weight']))
 
     nwci.append(monthly_total)
 
