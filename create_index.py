@@ -2,6 +2,7 @@ from os import path
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import normalize
+import impyute as impy
 
 data_path = 'data'
 
@@ -34,8 +35,12 @@ for i in range(len(municipios)):
 # Convert to numpy and flip over the diagonal
 data_output = np.rot90(np.fliplr(np.array(data_output)))
 
+# Impute zeros
+data_output[data_output == 0] = 'Nan'
+data_output = impy.em(data_output)
+
 # Normalize data
-data_output = normalize(data_output, axis=0)
+data_output = np.abs(normalize(data_output, axis=0))
 
 data_output = pd.DataFrame(data=data_output, index=dates, columns=headers)
 
