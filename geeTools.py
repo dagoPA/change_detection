@@ -12,7 +12,7 @@ def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, 
                               sum_values=False):
     print('start: ' + start_date)
     print('middle: ' + middle_date)
-    print('final: ' + final_date)
+    print('final: ' + final_date + '\n')
 
     collection = ee.ImageCollection('COPERNICUS/S1_GRD') \
         .filter(ee.Filter.eq('transmitterReceiverPolarisation', ['VV', 'VH'])) \
@@ -24,46 +24,55 @@ def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, 
     first_month = collection.filterDate(ee.Date(start_date), ee.Date(middle_date)).mean().clip(poly)
     second_month = collection.filterDate(ee.Date(middle_date), ee.Date(final_date)).mean().clip(poly)
 
-    # Create a new ImageCollection with the two images
-    collection = ee.ImageCollection.fromImages([first_month, second_month])
-    # Obtain only VV and VH bands
-    pcollection = collection.map(get_vvvh)
-    # Convert to List
-    pList = pcollection.toList(2)
+    # If there are not enogh images in the month, return zero
+    try:
+        # Create a new ImageCollection with the two images
+        collection = ee.ImageCollection.fromImages([first_month, second_month])
+        # Obtain only VV and VH bands
+        pcollection = collection.map(get_vvvh)
 
-    first = ee.Dictionary({'imlist': ee.List([]), 'poly': poly, 'enl': ee.Number(4.4)})
-    imList = ee.Dictionary(pList.iterate(clipList, first)).get('imlist')
+        # Convert to List
+        p_list = pcollection.toList(2)
 
-    # make omnibus test for change detection
-    result = ee.Dictionary(omnibus(imList, useQ=True))
+        first = ee.Dictionary({'imlist': ee.List([]), 'poly': poly, 'enl': ee.Number(4.4)})
+        im_list = ee.Dictionary(p_list.iterate(clipList, first)).get('imlist')
 
-    result = ee.Image(result.get('cmap')).byte().clip(poly)
+        # make omnibus test for change detection
+        result = ee.Dictionary(omnibus(im_list, useQ=True))
 
-    if (sum_values):
-        value = result.reduceRegion(
-            reducer=ee.Reducer.sum(),
-            geometry=poly,
-            scale=10,
-            maxPixels=1e9
-        )
-        # get and return the sum of all pixel values in image
-        value = value.getInfo()
-        value = int(value['VV'])
-    else:
-        value = 0
+        result = ee.Image(result.get('cmap')).byte().clip(poly)
 
-    if export:
-        gdexport = ee.batch.Export.image.toDrive(
-            result,
-            description='changes_' + start_date + '_' + final_date,
-            folder=file_path,
-            maxPixels=1540907088,
-            scale=10,
-            region=poly
-        )
-        gdexport.start()
+        if sum_values:
+            value = result.reduceRegion(
+                reducer=ee.Reducer.sum(),
+                geometry=poly,
+                scale=10,
+                maxPixels=1e9
+            )
+            # get and return the sum of all pixel values in image
+            value = value.getInfo()
+            value = int(value['VV'])
+        else:
+            value = 0
 
-    return value
+        if export:
+            gdexport = ee.batch.Export.image.toDrive(
+                result,
+                description='changes_' + start_date + '_' + final_date,
+                folder=file_path,
+                maxPixels=1540907088,
+                scale=10,
+                region=poly
+            )
+            gdexport.start()
+
+        return value
+
+
+
+    except:
+        print('error')
+        return 0
 
 
 def clip_ImageCollection(image, poly):
