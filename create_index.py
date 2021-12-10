@@ -2,7 +2,6 @@ from os import path
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import normalize
-import matplotlib.pyplot as plt
 
 data_path = 'data'
 
