@@ -15,7 +15,7 @@ gdrive_folder = 'changes_cdmx_1m'
 start_date = '2017-01-01'
 end_date = '2021-12-01'
 frequency = '1M'
-local_data_dir = 'data'
+local_data_dir = 'data/gee_results'
 # End Params
 
 # Get list of dates

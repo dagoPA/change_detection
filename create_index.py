@@ -1,22 +1,58 @@
 from os import path
+import numpy as np
 import pandas as pd
-
-municipios = ['Aguascalientes', 'Campeche', 'Centro', 'Chihuahua', 'Chilpancingo de los Bravo', 'Colima', 'Cuernavaca',
-              'Culiacán', 'Durango', 'Guadalajara', 'Guanajuato', 'Hermosillo', 'La Paz', 'Mexicali', 'Monterrey',
-              'Morelia', 'Mérida', 'Oaxaca de Juárez', 'Othón P. Blanco', 'Pachuca de Soto', 'Puebla', 'Querétaro',
-              'Saltillo', 'San Luis Potosí', 'Tepic', 'Tlaxcala', 'Toluca', 'Tuxtla Gutiérrez', 'Victoria', 'Xalapa',
-              'Zacatecas']
-
-
+from sklearn.preprocessing import normalize
+import impyute as impy
 
 data_path = 'data'
-municipio = municipios[0]
 
-asc = pd.read_csv(path.join(data_path, municipio + '_ASCENDING_.csv')).iloc[:, 1].to_numpy()
-dsc = pd.read_csv(path.join(data_path, municipio + '_DESCENDING_.csv')).iloc[:, 1].to_numpy()
+municipios = pd.read_csv(path.join(data_path, 'population_capitals.csv'))
+weight = values = municipios['population'] * 10 / municipios['population'].sum()
+municipios['weight'] = weight
 
-changes = asc + dsc / 2
+# List of months for preparing the output
+start_date = '2017-01-01'
+end_date = '2021-12-01'
+frequency = '1M'
+dates = pd.date_range(start_date, end_date, freq=frequency) - pd.offsets.MonthBegin(1)
+dates = dates.strftime("%Y-%m").values.tolist()[:-2]
+data_output = []
 
+headers = []
 
+# Weight and prepare changes
+max_value = 0
+for i in range(len(municipios)):
+    municipio = municipios.iloc[i]
 
+    asc = pd.read_csv(path.join(data_path + '/gee_results', municipio.iloc[0] + '_ASCENDING_.csv')).iloc[:, 1].to_numpy()
+    dsc = pd.read_csv(path.join(data_path + '/gee_results', municipio.iloc[0] + '_DESCENDING_.csv')).iloc[:, 1].to_numpy()
+    changes = (asc + dsc) / 2
+    data_output.append(changes)
+    headers.append(municipio.iloc[0])
+
+# Convert to numpy and flip over the diagonal
+data_output = np.rot90(np.fliplr(np.array(data_output)))
+
+# Impute zeros
+data_output[data_output == 0] = 'Nan'
+data_output = impy.em(data_output)
+
+# Normalize data
+data_output = np.abs(normalize(data_output, axis=0))
+
+data_output = pd.DataFrame(data=data_output, index=dates, columns=headers)
+
+# Create national weighted index
+nwci = []
+for index, row in data_output.iterrows():
+    monthly_total = 0
+    for i, v in row.iteritems():
+        monthly_total = monthly_total + (v * float(municipios[municipios['capital'] == i]['weight']))
+
+    nwci.append(monthly_total)
+
+# Save as csv
+data_output['national_weighted_index'] = nwci
+data_output.to_csv(path.join(data_path, 'normalized_change_index.csv'))
 print('eof')
