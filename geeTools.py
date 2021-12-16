@@ -58,7 +58,7 @@ def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, 
 
         if export_result:
             gdexport = ee.batch.Export.image.toDrive(
-                result,
+                result.toFloat(),
                 description='changes_' + start_date + '_' + final_date,
                 folder=file_path,
                 maxPixels=1540907088,
@@ -69,7 +69,7 @@ def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, 
 
         if export:
             gdexport = ee.batch.Export.image.toDrive(
-                first_month,
+                first_month.toFloat(),
                 description='SAR_' + start_date + '_' + final_date,
                 folder=file_path,
                 maxPixels=1540907088,
