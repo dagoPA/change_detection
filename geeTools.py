@@ -1,6 +1,7 @@
 import ee
 import math
 import numpy as np
+from rasterio.warp import transform_bounds
 
 from canty.eeWishart import omnibus
 
@@ -117,6 +118,7 @@ def pairwise(iterable):
 
 
 def readGeoTiffAsRGB(path):
+    import rasterio as rio
     # open the georaster and extract it's bands
     with rio.open(path) as geoimage:
         bounds = transform_bounds(geoimage.crs, "epsg:4326", *geoimage.bounds)
