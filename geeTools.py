@@ -9,7 +9,7 @@ ee.Initialize()
 
 
 # Calculate monthly changes between two months
-def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, file_path, export=False,
+def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, file_path, file_prefix='', export=False,
                               export_result=False,
                               sum_values=False):
     print('start: ' + start_date)
@@ -60,7 +60,7 @@ def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, 
         if export_result:
             gdexport = ee.batch.Export.image.toDrive(
                 result.toFloat(),
-                description='changes_' + start_date + '_' + final_date,
+                description='changes_' + file_prefix + '_' + start_date + '_' + final_date,
                 folder=file_path,
                 maxPixels=1540907088,
                 scale=10,
