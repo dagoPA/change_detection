@@ -10,13 +10,17 @@ municipio = sys.argv[1]
 export_result = bool(sys.argv[2])
 export = bool(sys.argv[3])
 sum_values = bool(sys.argv[4])
+start_date = sys.argv[5]
+end_date = sys.argv[6]
+local_data_dir = sys.argv[6]
+
 
 orbits = ['ASCENDING', 'DESCENDING']
 gdrive_folder = 'changes_cdmx_1m'
-start_date = '2017-01-01'
-end_date = '2021-12-01'
 frequency = '1M'
-local_data_dir = 'data'
+# start_date = '2017-01-01'
+# end_date = '2021-12-01'
+# local_data_dir = 'data'
 # End Params
 
 # Get list of dates
@@ -27,7 +31,7 @@ dates = dates.strftime("%Y-%m-%d").values.tolist()
 capitales = ee.FeatureCollection("projects/ee-vulnerability-gee4geo/assets/capitales")
 
 for orbit_ in orbits:
-    my_file = Path('data/changes_municipios_2/' + municipio + '_' + orbit_ + '_' + '.csv')
+    my_file = Path(local_data_dir + municipio + '_' + orbit_ + '_' + '.csv')
     if not my_file.is_file():
         # Filter municipio and convert it to geometry in case it's needed
         filter_ee = ee.Filter.inList('NOMGEO', [municipio])
@@ -43,8 +47,9 @@ for orbit_ in orbits:
                                                  export=export, export_result=export_result, sum_values=sum_values)
             changes.append(sum)
 
-        dict = {municipio + '_' + orbit_: changes}
-        df = pd.DataFrame(dict)
-        df.to_csv(local_data_dir + '/' + municipio + '_' + orbit_ + '_' + '.csv')
+        if sum_values:
+            dict = {municipio + '_' + orbit_: changes}
+            df = pd.DataFrame(dict)
+            df.to_csv(local_data_dir + '/' + municipio + '_' + orbit_ + '_' + '.csv')
 
 print('end of file')

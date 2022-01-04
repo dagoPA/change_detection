@@ -1,31 +1,31 @@
-python changes_capital_runable.py "Aguascalientes"
-python changes_capital_runable.py "Campeche"
-python changes_capital_runable.py "Centro"
-python changes_capital_runable.py "Chihuahua"
-python changes_capital_runable.py "Chilpancingo de los Bravo"
-python changes_capital_runable.py "Colima"
-python changes_capital_runable.py "Cuernavaca"
-python changes_capital_runable.py "Culiacán"
-python changes_capital_runable.py "Durango"
-python changes_capital_runable.py "Guadalajara"
-python changes_capital_runable.py "Guanajuato"
-python changes_capital_runable.py "Hermosillo"
-python changes_capital_runable.py "La Paz"
-python changes_capital_runable.py "Mexicali"
-python changes_capital_runable.py "Monterrey"
-python changes_capital_runable.py "Morelia"
-python changes_capital_runable.py "Mérida"
-python changes_capital_runable.py "Oaxaca de Juárez"
-python changes_capital_runable.py "Othón P. Blanco"
-python changes_capital_runable.py "Pachuca de Soto"
-python changes_capital_runable.py "Puebla"
-python changes_capital_runable.py "Querétaro"
-python changes_capital_runable.py "Saltillo"
-python changes_capital_runable.py "San Luis Potosí"
-python changes_capital_runable.py "Tepic"
-python changes_capital_runable.py "Tlaxcala"
-python changes_capital_runable.py "Toluca"
-python changes_capital_runable.py "Tuxtla Gutiérrez"
-python changes_capital_runable.py "Victoria"
-python changes_capital_runable.py "Xalapa"
-python changes_capital_runable.py "Zacatecas"
+tmux new-window 'python changes_capital_runable.py "Aguascalientes" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Campeche" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Centro" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Chihuahua" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Chilpancingo de los Bravo" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Colima" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Cuernavaca" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Culiacán" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Durango" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Guadalajara" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Guanajuato" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Hermosillo" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "La Paz" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Mexicali" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Monterrey" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Morelia" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Mérida" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Oaxaca de Juárez" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Othón P. Blanco" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Pachuca de Soto" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Puebla" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Querétaro" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Saltillo" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "San Luis Potosí" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Tepic" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Tlaxcala" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Toluca" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Tuxtla Gutiérrez" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Victoria" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Xalapa" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
+tmux new-window 'python changes_capital_runable.py "Zacatecas" "False" "False" "True" "2017-01-01" "2022-02-01" "data"'
