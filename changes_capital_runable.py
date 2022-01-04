@@ -14,7 +14,6 @@ start_date = sys.argv[5]
 end_date = sys.argv[6]
 local_data_dir = sys.argv[7]
 
-
 orbits = ['ASCENDING', 'DESCENDING']
 gdrive_folder = 'changes_cdmx_1m'
 frequency = '1M'
