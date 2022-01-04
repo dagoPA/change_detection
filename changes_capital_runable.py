@@ -7,12 +7,12 @@ import geeTools as geet
 
 # Begin Params
 municipio = sys.argv[1]
-export_result = bool(sys.argv[2])
-export = bool(sys.argv[3])
-sum_values = bool(sys.argv[4])
+export_result = (sys.argv[2] == 'True')
+export = (sys.argv[3] == 'True')
+sum_values = (sys.argv[4] == 'True')
 start_date = sys.argv[5]
 end_date = sys.argv[6]
-local_data_dir = sys.argv[6]
+local_data_dir = sys.argv[7]
 
 
 orbits = ['ASCENDING', 'DESCENDING']
