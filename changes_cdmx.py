@@ -8,7 +8,7 @@ import geeTools as geet
 orbits = ['ASCENDING', 'DESCENDING']
 gdrive_folder = 'changes_cdmx_1m'
 start_date = '2017-01-01'
-end_date = '2021-12-01'
+end_date = '2022-03-01'
 frequency = '1M'
 local_data_dir = 'data/gee_results'
 # End Params
@@ -21,7 +21,7 @@ dates = dates.strftime("%Y-%m-%d").values.tolist()
 cdmx = table = ee.FeatureCollection("projects/ee-vulnerability-gee4geo/assets/cdmx").first().geometry()
 
 for orbit_ in orbits:
-    my_file = Path('data/changes_municipios_2/cdmx_' + orbit_ + '_' + '.csv')
+    my_file = Path(local_data_dir + orbit_ + '_' + '.csv')
 
     changes = []
     # Calculate changes, comparing each month against the next one
