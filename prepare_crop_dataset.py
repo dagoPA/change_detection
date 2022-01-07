@@ -53,13 +53,14 @@ for window in windows:
             y_d = random.randint(patch_height+1, im_height - patch_height) - patch_height
 
             # perform the change
-            patch = im_A[x_o - patch_width:x_o + patch_width, y_o - patch_height:y_o + patch_height, 0:2]
             try:
+                patch = im_A[x_o - patch_width:x_o + patch_width, y_o - patch_height:y_o + patch_height, 0:2]
                 im_B[x_d - patch_width:x_d + patch_width, y_d - patch_height:y_d + patch_height, 0:2] = patch
+                im_l[x_d - patch_width:x_d + patch_width, y_d - patch_height:y_d + patch_height] = 255
             except:
                 print('error')
 
-            im_l[x_d - patch_width:x_d + patch_width, y_d - patch_height:y_d + patch_height] = 255
+
 
 
             print('patch completed')
