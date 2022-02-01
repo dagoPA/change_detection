@@ -6,7 +6,7 @@ from PIL import Image
 
 random.seed(128)
 # args
-plot = False
+plot = True
 im_size = 256
 # read image
 data_path = '/home/dagopa/data/SAR/'
