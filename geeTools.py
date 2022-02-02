@@ -8,7 +8,7 @@ from canty.eeWishart import omnibus
 ee.Initialize()
 
 
-# Calculate monthly changes between two months
+# Calculate monthly changes between two dates
 def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, file_path, file_prefix='', export=False,
                               export_result=False,
                               sum_values=False):
@@ -84,6 +84,69 @@ def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, 
         return value
 
 
+
+    except:
+        print('error')
+        return 0
+
+
+# Calculate monthly changes between two months
+def calculate_changes(initial_date, final_date, poly, orbit, file_path, file_prefix='', export=False,
+                              export_result=False,
+                              sum_values=False):
+    print('start: ' + initial_date + '\n')
+    print('final: ' + final_date + '\n')
+
+    collection = ee.ImageCollection('COPERNICUS/S1_GRD') \
+        .filter(ee.Filter.eq('transmitterReceiverPolarisation', ['VV', 'VH'])) \
+        .filter(ee.Filter.eq('resolution_meters', 10)) \
+        .filter(ee.Filter.eq('instrumentMode', 'IW')) \
+        .filter(ee.Filter.eq('orbitProperties_pass', orbit)) \
+        .filterBounds(poly)
+
+    collection = collection.filterDate(ee.Date(initial_date), ee.Date(final_date))
+
+    # If there are not enogh images in the month, return zero
+    try:
+        # Obtain only VV and VH bands
+        pcollection = collection.map(get_vvvh)
+
+        # Convert to List
+        p_list = pcollection.toList(2)
+
+        first = ee.Dictionary({'imlist': ee.List([]), 'poly': poly, 'enl': ee.Number(4.4)})
+        im_list = ee.Dictionary(p_list.iterate(clipList, first)).get('imlist')
+
+        # make omnibus test for change detection
+        result = ee.Dictionary(omnibus(im_list, useQ=True))
+
+        result = ee.Image(result.get('cmap')).byte().clip(poly)
+
+        if sum_values:
+            value = result.reduceRegion(
+                reducer=ee.Reducer.sum(),
+                geometry=poly,
+                scale=10,
+                maxPixels=1e9
+            )
+            # get and return the sum of all pixel values in image
+            value = value.getInfo()
+            value = int(value['VV'])
+        else:
+            value = 0
+
+        if export_result:
+            gdexport = ee.batch.Export.image.toDrive(
+                result.toFloat(),
+                description='changes_' + file_prefix + '_' + initial_date + '_' + final_date,
+                folder=file_path,
+                maxPixels=1540907088,
+                scale=10,
+                region=poly
+            )
+            gdexport.start()
+
+        return value
 
     except:
         print('error')
