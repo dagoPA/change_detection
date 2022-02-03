@@ -1,5 +1,4 @@
 from pathlib import Path
-import pandas as pd
 import ee
 import geeTools as geet
 
@@ -7,33 +6,17 @@ import geeTools as geet
 
 orbits = ['ASCENDING', 'DESCENDING']
 gdrive_folder = 'changes_cdmx_1m'
-start_date = '2017-01-01'
-end_date = '2022-03-01'
-frequency = '1M'
+initial_date = '2021-01-01'
+final_date = '2022-01-01'
 local_data_dir = 'data/gee_results'
 # End Params
 
-# Get list of dates
-dates = pd.date_range(start_date, end_date, freq=frequency) - pd.offsets.MonthBegin(1)
-dates = dates.strftime("%Y-%m-%d").values.tolist()
-
-# Get the list of municipios
+# Get the polygon of mexico City
 cdmx = table = ee.FeatureCollection("projects/ee-vulnerability-gee4geo/assets/cdmx").first().geometry()
 
 for orbit_ in orbits:
     my_file = Path(local_data_dir + orbit_ + '_' + '.csv')
-
-    changes = []
-    # Calculate changes, comparing each month against the next one
-    for i in range(2, len(dates)):
-        sum = geet.calculate_monthly_changes(dates[i - 2], dates[i - 1], dates[i], cdmx, orbit_, 'test_SAR',
-                                             file_prefix='cdmx_'+orbit_,
-                                             export=False, sum_values=True)
-        changes.append(sum)
-
-    dict = {'cdmx' + '_' + orbit_: changes}
-    df = pd.DataFrame(dict)
-    df.to_csv(local_data_dir + '/' + 'cdmx' + '_' + orbit_ + '_' + '.csv')
-
+    sum = geet.calculate_changes(initial_date, final_date, cdmx, orbit_, 'cdmx_2021', file_prefix='cdmx_'+orbit_,
+                                 export_result=True)
 
 print('end of file')
