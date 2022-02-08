@@ -101,8 +101,10 @@ def calculate_changes(initial_date, final_date, poly, orbit, file_path, file_pre
         .filter(ee.Filter.eq('transmitterReceiverPolarisation', ['VV', 'VH'])) \
         .filter(ee.Filter.eq('resolution_meters', 10)) \
         .filter(ee.Filter.eq('instrumentMode', 'IW')) \
-        .filter(ee.Filter.eq('orbitProperties_pass', orbit)) \
         .filterBounds(poly)
+
+    if orbit != 'both':
+        collection = collection.filter(ee.Filter.eq('orbitProperties_pass', orbit))
 
     collection = collection.filterDate(ee.Date(initial_date), ee.Date(final_date))
 
