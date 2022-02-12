@@ -2,7 +2,7 @@ import ee
 import math
 import numpy as np
 from rasterio.warp import transform_bounds
-
+import pandas as pd
 from canty.eeWishart import omnibus
 
 ee.Initialize()
@@ -90,10 +90,11 @@ def calculate_monthly_changes(start_date, middle_date, final_date, poly, orbit, 
         return 0
 
 
-# Calculate monthly changes between two months
-def calculate_changes(initial_date, final_date, poly, orbit, file_path, file_prefix='', export=False,
+# Calculate changes
+def calculate_changes(initial_date, final_date, orbit, frequency, poly, file_path, file_prefix='', export=False,
                               export_result=False,
                               sum_values=False):
+
     print('start: ' + initial_date + '\n')
     print('final: ' + final_date + '\n')
 
@@ -106,13 +107,32 @@ def calculate_changes(initial_date, final_date, poly, orbit, file_path, file_pre
     if orbit != 'both':
         collection = collection.filter(ee.Filter.eq('orbitProperties_pass', orbit))
 
-    collection = collection.filterDate(ee.Date(initial_date), ee.Date(final_date))
+    dates = pd.date_range(initial_date, final_date).strftime("%Y-%m-%d").values.tolist()[0::frequency]
+
+    # construct the list of images
+    im_list = []
+    for date_i, date_f in pairwise(dates):
+        image = collection.filterDate(ee.Date(date_i), ee.Date(date_f)).mean().clip(poly)
+        if export:
+            gdexport = ee.batch.Export.image.toDrive(
+                image.toFloat(),
+                description='im_' + orbit + date_i + '_' + date_f,
+                folder=file_path,
+                maxPixels=1540907088,
+                scale=10,
+                region=poly
+            )
+            gdexport.start()
+
+        im_list.append(image)
+
+    # convert the list of images to a collection
+    collection = ee.ImageCollection.fromImages(im_list)
 
     # If there are not enogh images in the month, return zero
     try:
         # Obtain only VV and VH bands
         pcollection = collection.map(get_vvvh)
-
         # Convert to List
         p_list = pcollection.toList(2)
 
@@ -140,7 +160,7 @@ def calculate_changes(initial_date, final_date, poly, orbit, file_path, file_pre
         if export_result:
             gdexport = ee.batch.Export.image.toDrive(
                 result.toFloat(),
-                description='changes_' + file_prefix + '_' + initial_date + '_' + final_date,
+                description=file_prefix + '_' + initial_date + '_' + final_date,
                 folder=file_path,
                 maxPixels=1540907088,
                 scale=10,

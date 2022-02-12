@@ -1,20 +1,20 @@
 from pathlib import Path
 import ee
 import geeTools as geet
-
+import pandas as pd
 # Begin Params
 
 orbits = ['ASCENDING', 'DESCENDING']
 gdrive_folder = 'cdmx_2021'
-initial_date = '2021-01-01'
-final_date = '2022-01-01'
+initial_date = '2022-01-01'
+final_date = '2022-02-12'
 local_data_dir = 'data/gee_results'
+frequency = 14
 # End Params
 
 # Get the polygon of mexico City
 cdmx = ee.FeatureCollection("projects/ee-vulnerability-gee4geo/assets/cdmx").first().geometry()
 
-sum = geet.calculate_changes(initial_date, final_date, cdmx, 'both', gdrive_folder, file_prefix='cdmx',
-                                 export_result=True)
+geet.calculate_changes(initial_date, final_date, 'both', frequency, cdmx, gdrive_folder, file_prefix='changes_cdmx', export_result=False, export=True)
 
 print('end of file')
