@@ -2,19 +2,19 @@ from pathlib import Path
 import ee
 import geeTools as geet
 import pandas as pd
-# Begin Params
+import os
 
-orbits = ['ASCENDING', 'DESCENDING', 'both']
-gdrive_folder = 'cdmx_2021'
-initial_date = '2020-01-01'
-final_date = '2022-01-01'
-local_data_dir = 'data/gee_results'
-frequency = 14
-# End Params
+data_path = '/data/cdmx_SAR'
+imsar_path = 'cdmx_BOTH'
 
-# Get the polygon of mexico City
-cdmx = ee.FeatureCollection("projects/ee-vulnerability-gee4geo/assets/cdmx").first().geometry()
+im_list = sorted(os.listdir(os.path.join(data_path, imsar_path)))
 
-geet.calculate_changes(initial_date, final_date, orbits[0], frequency, cdmx, gdrive_folder, file_prefix='changes_cdmx', export_result=False, export=True)
+cmd = 'docker exec -it ac0c91124f2c python scripts/sar_seqQ.py -s 0.0001'
+for im_a, im_b in geet.pairwise(im_list):
+    cmd = cmd + os.path.join(' myimagery', imsar_path, im_a)
+    cmd = cmd + os.path.join(' myimagery', imsar_path, im_b)
+    cmd = cmd + ' result/change' + (im_a[7:17] + '_' + im_b[18:28]).replace('-', '_') + '.tif'
+    print(cmd)
+    os.system(cmd)
 
-print('end of file')
+print('process completed')
